@@ -17,7 +17,6 @@
 package flow;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -38,14 +37,8 @@ public final class Flow {
     return InternalContextWrapper.getFlow(context);
   }
 
-  public static Context install(Context baseContext, final Activity activity,
-      final StateParceler parceler, final History defaultHistory, final Dispatcher dispatcher) {
-    if (InternalFragment.find(activity) != null) {
-      throw new IllegalStateException("Flow is already installed in this Activity.");
-    }
-    final Application app = (Application) baseContext.getApplicationContext();
-    InternalFragment.install(app, activity, parceler, defaultHistory, dispatcher);
-    return new InternalContextWrapper(baseContext, activity);
+  public static Installer installer() {
+    return new Installer();
   }
 
   public static boolean onBackPressed(Activity activity) {
