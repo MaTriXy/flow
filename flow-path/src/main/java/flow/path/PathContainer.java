@@ -27,7 +27,7 @@ import static flow.path.Preconditions.checkNotNull;
  * Handles swapping paths within a container view, as well as flow mechanics, allowing supported
  * container views to be largely declarative.
  */
-public abstract class PathContainer {
+public abstract class PathContainer implements Flow.Dispatcher {
   private static final ViewState NULL_VIEW_STATE = new NullViewState();
 
   /**
@@ -63,22 +63,25 @@ public abstract class PathContainer {
     }
   }
 
+  private final PathContainerView containerView;
   private final int tagKey;
 
   /**
+   * @param containerView
    * @param tagKey an id used to store bookkeeping info on container views via {@link
    * View#setTag(int, Object)}
    */
-  protected PathContainer(int tagKey) {
+  protected PathContainer(PathContainerView containerView, int tagKey) {
+    this.containerView = containerView;
     this.tagKey = tagKey;
   }
 
-  public final void executeTraversal(PathContainerView view, Flow.Traversal traversal,
+  public final void executeTraversal(Flow.Traversal traversal,
       final Flow.TraversalCallback callback) {
-    final View oldChild = view.getCurrentChild();
-    ViewGroup containerView = view.getContainerView();
+    final View oldChild = containerView.getPathFrame().getChildAt(0);
+    ViewGroup frame = containerView.getPathFrame();
     ViewState viewState = traversal.destination.currentViewState();
-    doShowPath(traversal.destination.<Path>top(), containerView, oldChild, traversal.direction,
+    doShowPath(traversal.destination.<Path>top(), frame, oldChild, traversal.direction,
         viewState, callback);
   }
 

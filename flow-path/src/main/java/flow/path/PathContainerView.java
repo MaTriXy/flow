@@ -16,16 +16,8 @@
 
 package flow.path;
 
-import android.content.Context;
 import android.view.ViewGroup;
-import flow.Flow;
 
-public interface PathContainerView extends Flow.Dispatcher {
-  ViewGroup getCurrentChild();
-
-  ViewGroup getContainerView();
-
-  Context getContext();
-
-  void dispatch(Flow.Traversal traversal, Flow.TraversalCallback callback);
+public interface PathContainerView {
+  ViewGroup getPathFrame();
 }
