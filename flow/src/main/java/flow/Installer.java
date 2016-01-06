@@ -3,8 +3,7 @@ package flow;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-
-import static flow.Preconditions.checkNotNull;
+import android.support.annotation.Nullable;
 
 public final class Installer {
   private StateParceler parceler;
@@ -14,20 +13,17 @@ public final class Installer {
   Installer() {
   }
 
-  public Installer stateParceler(StateParceler parceler) {
-    checkNotNull(parceler, "parceler may not be null");
+  public Installer stateParceler(@Nullable StateParceler parceler) {
     this.parceler = parceler;
     return this;
   }
 
-  public Installer dispatcher(Flow.Dispatcher dispatcher) {
-    checkNotNull(dispatcher, "dispatcher may not be null");
+  public Installer dispatcher(@Nullable Flow.Dispatcher dispatcher) {
     this.dispatcher = dispatcher;
     return this;
   }
 
-  public Installer defaultState(Object defaultState) {
-    checkNotNull(defaultState, "defaultState may not be null");
+  public Installer defaultState(@Nullable Object defaultState) {
     this.defaultState = defaultState;
     return this;
   }
