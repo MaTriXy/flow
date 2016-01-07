@@ -37,8 +37,8 @@ public final class Flow {
     return InternalContextWrapper.getFlow(context);
   }
 
-  public static Installer installer() {
-    return new Installer();
+  public static Installer configure(Context baseContext, Activity activity) {
+    return new Installer(baseContext, activity);
   }
 
   public static boolean onBackPressed(Activity activity) {

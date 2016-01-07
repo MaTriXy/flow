@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 
 final class InternalContextWrapper extends ContextWrapper {
-  private static final String FLOW_SERVICE = "flow.Flow.FLOW_SERVICE";
+  private static final String FLOW_SERVICE = "flow.InternalContextWrapper.FLOW_SERVICE";
 
   static Flow getFlow(Context context) {
     //noinspection ResourceType

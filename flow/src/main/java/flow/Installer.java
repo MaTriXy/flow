@@ -6,11 +6,16 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 public final class Installer {
+
+  private final Context baseContext;
+  private final Activity activity;
   private StateParceler parceler;
   private Object defaultState;
   private Flow.Dispatcher dispatcher;
 
-  Installer() {
+  public Installer(Context baseContext, Activity activity) {
+    this.baseContext = baseContext;
+    this.activity = activity;
   }
 
   public Installer stateParceler(@Nullable StateParceler parceler) {
@@ -28,7 +33,7 @@ public final class Installer {
     return this;
   }
 
-  public Context install(Context baseContext, Activity activity) {
+  public Context install() {
     if (InternalFragment.find(activity) != null) {
       throw new IllegalStateException("Flow is already installed in this Activity.");
     }
