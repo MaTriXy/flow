@@ -80,7 +80,7 @@ public abstract class PathContainer implements Flow.Dispatcher {
       final Flow.TraversalCallback callback) {
     final View oldChild = containerView.getPathFrame().getChildAt(0);
     ViewGroup frame = containerView.getPathFrame();
-    ViewState viewState = traversal.destination.currentViewState();
+    ViewState viewState = traversal.destination.topViewState();
     doShowPath(traversal.destination.<Path>top(), frame, oldChild, traversal.direction,
         viewState, callback);
   }
@@ -92,7 +92,7 @@ public abstract class PathContainer implements Flow.Dispatcher {
   public final void executeFlowTraversal(ViewGroup container, Flow.Traversal traversal,
       final Flow.TraversalCallback callback) {
     final View oldChild = container.getChildAt(0);
-    ViewState viewState = traversal.destination.currentViewState();
+    ViewState viewState = traversal.destination.topViewState();
     doShowPath(traversal.destination.<Path>top(), container, oldChild, traversal.direction,
         viewState, callback);
   }

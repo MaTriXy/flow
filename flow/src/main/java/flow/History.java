@@ -135,7 +135,7 @@ public final class History implements Iterable<Object> {
     return history.get(history.size() - index - 1);
   }
 
-  public ViewState currentViewState() {
+  public ViewState topViewState() {
     return peekViewState(0);
   }
 
