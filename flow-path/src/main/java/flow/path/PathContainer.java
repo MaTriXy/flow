@@ -16,123 +16,69 @@
 
 package flow.path;
 
+import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewGroup;
-import flow.Flow;
+import flow.Flow.Direction;
+import flow.Flow.TraversalCallback;
 import flow.ViewState;
-
-import static flow.path.Preconditions.checkNotNull;
 
 /**
  * Handles swapping paths within a container view, as well as flow mechanics, allowing supported
  * container views to be largely declarative.
  */
+// TODO: this isn't path-specific at all!
 public abstract class PathContainer {
   private static final ViewState NULL_VIEW_STATE = new NullViewState();
 
-  /**
-   * Provides information about the current or most recent Traversal handled by the container.
-   */
-  protected static final class TraversalState {
-    private Path fromPath;
-    private ViewState fromViewState;
-    private Path toPath;
-    private ViewState toViewState;
+  public static final class State {
+    private final Path path;
+    private final ViewState viewState;
 
-    public void setNextEntry(Path path, ViewState viewState) {
-      this.fromPath = this.toPath;
-      this.fromViewState = this.toViewState;
-      this.toPath = path;
-      this.toViewState = viewState;
+    private State(Path path, ViewState viewState) {
+      this.path = path;
+      this.viewState = viewState;
     }
 
-    public Path fromPath() {
-      return fromPath;
-    }
-
-    public Path toPath() {
-      return toPath;
+    public Path getPath() {
+      return path;
     }
 
     public void saveViewState(View view) {
-      fromViewState.save(view);
-    }
-
-    public void restoreViewState(View view) {
-      toViewState.restore(view);
+      viewState.save(view);
     }
   }
 
-  private final int tagKey;
+  @Nullable private State currentState;
 
   /**
-   * @param tagKey an id used to store bookkeeping info on container views via {@link
-   * View#setTag(int, Object)}
-   */
-  protected PathContainer(int tagKey) {
-    this.tagKey = tagKey;
-  }
-
-  public final void executeTraversal(PathContainerView view, Flow.Traversal traversal,
-      final Flow.TraversalCallback callback) {
-    final View oldChild = view.getCurrentChild();
-    ViewGroup containerView = view.getContainerView();
-    ViewState viewState = traversal.destination.topViewState();
-    doShowPath(traversal.destination.<Path>top(), containerView, oldChild, traversal.direction,
-        viewState, callback);
-  }
-
-  /**
-   * Replaces the contents of a given {@link ViewGroup} with a new view inflated from
-   * a {@link Flow.Traversal}.
-   */
-  public final void executeFlowTraversal(ViewGroup container, Flow.Traversal traversal,
-      final Flow.TraversalCallback callback) {
-    final View oldChild = container.getChildAt(0);
-    ViewState viewState = traversal.destination.topViewState();
-    doShowPath(traversal.destination.<Path>top(), container, oldChild, traversal.direction,
-        viewState, callback);
-  }
-
-  /**
-   * Replace the current view and show the given path. Allows display of {@link Path}s other
+   * Replace any current view to show the given path. Allows display of {@link Path}s other
    * than in response to Flow dispatches.
    */
-  public void setPath(ViewGroup container, Path path, Flow.Direction direction,
-      Flow.TraversalCallback callback) {
-    doShowPath(path, container, container.getChildAt(0), direction, NULL_VIEW_STATE, callback);
+  public final void setPath(Path path, Direction direction, TraversalCallback callback) {
+    setPath(path, direction, NULL_VIEW_STATE, callback);
   }
 
-  private void doShowPath(Path path, ViewGroup container, View oldChild, Flow.Direction direction,
-      ViewState viewState, Flow.TraversalCallback callback) {
-    Path oldPath;
-    TraversalState traversalState = ensureTag(container);
+  public final void setPath(Path path, Direction direction, ViewState viewState,
+      final TraversalCallback callback) {
 
-    // See if we already have the direct child we want, and if so short circuit the traversal.
-    if (oldChild != null) {
-      oldPath = checkNotNull(traversalState.toPath, "Container view has child %s with no path",
-          oldChild.toString());
-      if (oldPath.equals(path)) {
+    // If we already have the path we want, short circuit.
+    if (currentState != null && currentState.path.equals(path)) {
+      callback.onTraversalCompleted();
+      return;
+    }
+
+    State outgoingState = currentState;
+    final State incomingState = new State(path, viewState);
+    changePath(outgoingState, incomingState, direction, new TraversalCallback() {
+      @Override public void onTraversalCompleted() {
+        currentState = incomingState;
         callback.onTraversalCompleted();
-        return;
       }
-    }
-
-    traversalState.setNextEntry(path, viewState);
-    performTraversal(container, traversalState, direction, callback);
+    });
   }
 
-  protected abstract void performTraversal(ViewGroup container, TraversalState traversalState,
-      Flow.Direction direction, Flow.TraversalCallback callback);
-
-  private TraversalState ensureTag(ViewGroup container) {
-    TraversalState traversalState = (TraversalState) container.getTag(tagKey);
-    if (traversalState == null) {
-      traversalState = new TraversalState();
-      container.setTag(tagKey, traversalState);
-    }
-    return traversalState;
-  }
+  protected abstract void changePath(@Nullable State outgoingState,
+      State incomingState, Direction direction, TraversalCallback callback);
 
   private static final class NullViewState implements ViewState {
     @Override public void save(View view) {
