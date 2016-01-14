@@ -1,0 +1,34 @@
+buildscript {
+  dependencies {
+    classpath deps.android_gradle_plugin
+  }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+  buildToolsVersion rootProject.ext.buildToolsVersion
+
+  defaultConfig {
+    applicationId "flow.path.sample.basic"
+    minSdkVersion rootProject.ext.minSdkVersion
+    versionName VERSION_NAME
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  packagingOptions {
+    exclude 'LICENSE.txt'
+  }
+}
+
+dependencies {
+  compile project(':flow')
+  compile project(':flow-path')
+  compile 'com.android.support:appcompat-v7:23.1.1'
+}
