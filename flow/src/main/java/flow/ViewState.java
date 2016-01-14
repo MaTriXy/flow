@@ -17,8 +17,20 @@ package flow;
 
 import android.view.View;
 
-public interface ViewState {
-  void save(View view);
+public abstract class ViewState {
+  public static final ViewState NULL = new ViewState() {
+    @Override public void save(View view) {
+    }
 
-  void restore(View view);
+    @Override public void restore(View view) {
+    }
+  };
+
+  ViewState() {
+    // No external instances.
+  }
+
+  public abstract void save(View view);
+
+  public abstract void restore(View view);
 }

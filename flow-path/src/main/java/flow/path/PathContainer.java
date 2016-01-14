@@ -28,7 +28,6 @@ import flow.ViewState;
  */
 // TODO: this isn't path-specific at all!
 public abstract class PathContainer {
-  private static final ViewState NULL_VIEW_STATE = new NullViewState();
 
   public static final class State {
     private final Path path;
@@ -55,7 +54,7 @@ public abstract class PathContainer {
    * than in response to Flow dispatches.
    */
   public final void setPath(Path path, Direction direction, TraversalCallback callback) {
-    setPath(path, direction, NULL_VIEW_STATE, callback);
+    setPath(path, direction, ViewState.NULL, callback);
   }
 
   public final void setPath(Path path, Direction direction, ViewState viewState,
@@ -79,12 +78,4 @@ public abstract class PathContainer {
 
   protected abstract void changePath(@Nullable State outgoingState,
       State incomingState, Direction direction, TraversalCallback callback);
-
-  private static final class NullViewState implements ViewState {
-    @Override public void save(View view) {
-    }
-
-    @Override public void restore(View view) {
-    }
-  }
 }

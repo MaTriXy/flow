@@ -154,7 +154,7 @@ public final class History implements Iterable<Object> {
     return Arrays.deepToString(history.toArray());
   }
 
-  private static final class Entry implements ViewState {
+  private static final class Entry extends ViewState {
     final Object state;
     SparseArray<Parcelable> viewState;
 
