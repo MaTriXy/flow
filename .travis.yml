@@ -2,16 +2,16 @@ language: android
 
 android:
   components:
+    - tools
     - platform-tools
-    - build-tools-23.0.1
-    - android-23
-    - extra-android-support
-    - extra-android-m2repository
-  licenses:
-    - 'android-sdk-license-.+'
 
 jdk:
   - oraclejdk8
+
+before_script:
+  # Install SDK license so Android Gradle plugin can install deps.
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
 
 script:
   - ./gradlew clean build check
